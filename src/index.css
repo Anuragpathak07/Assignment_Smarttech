@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 187 70% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 215 25% 25%;
+
+    --muted: 210 15% 94%;
+    --muted-foreground: 215 15% 50%;
+
+    --accent: 187 65% 92%;
+    --accent-foreground: 187 70% 25%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 187 70% 35%;
+
+    --radius: 0.5rem;
+
+    /* Healthcare semantic colors */
+    --risk-low: 142 70% 45%;
+    --risk-low-foreground: 0 0% 100%;
+    --risk-medium: 38 92% 50%;
+    --risk-medium-foreground: 0 0% 10%;
+    --risk-high: 0 72% 51%;
+    --risk-high-foreground: 0 0% 100%;
+
+    /* Chart colors */
+    --chart-primary: 187 70% 45%;
+    --chart-secondary: 210 70% 55%;
+    --chart-tertiary: 142 60% 45%;
+    --chart-quaternary: 38 80% 55%;
+
+    /* Status colors */
+    --status-normal: 142 70% 45%;
+    --status-warning: 38 92% 50%;
+    --status-critical: 0 72% 51%;
+    --status-info: 210 70% 55%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 187 70% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 187 65% 95%;
+    --sidebar-accent-foreground: 187 70% 25%;
+    --sidebar-border: 210 20% 92%;
+    --sidebar-ring: 187 70% 35%;
+  }
+
+  .dark {
+    --background: 215 30% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 215 30% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 215 30% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 187 70% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 215 25% 20%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 187 50% 20%;
+    --accent-foreground: 187 70% 80%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 25% 20%;
+    --input: 215 25% 20%;
+    --ring: 187 70% 45%;
+
+    --sidebar-background: 215 30% 10%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 187 70% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 187 40% 15%;
+    --sidebar-accent-foreground: 187 70% 80%;
+    --sidebar-border: 215 25% 18%;
+    --sidebar-ring: 187 70% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-medical {
+    background: linear-gradient(135deg, hsl(187 70% 35%) 0%, hsl(210 70% 45%) 100%);
+  }
+
+  .gradient-hero {
+    background: linear-gradient(180deg, hsl(187 70% 97%) 0%, hsl(210 20% 98%) 100%);
+  }
+
+  .shadow-medical {
+    box-shadow: 0 4px 6px -1px hsl(215 25% 15% / 0.05), 0 2px 4px -2px hsl(215 25% 15% / 0.05);
+  }
+
+  .shadow-medical-lg {
+    box-shadow: 0 10px 15px -3px hsl(215 25% 15% / 0.08), 0 4px 6px -4px hsl(215 25% 15% / 0.05);
+  }
+}
