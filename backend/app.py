@@ -62,8 +62,8 @@ def create_app():
                 pass
             
             # Trigger Ingestion (Mainly for CSVs)
-            from backend.ingestion import process_csv
-            success = process_csv(filepath)
+            from backend.ingestion import process_file
+            success = process_file(filepath)
             
             if success:
                 return jsonify({'message': 'File uploaded and processed successfully', 'filename': filename}), 201

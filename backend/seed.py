@@ -14,17 +14,28 @@ def seed_data():
         
         print("Generating synthetic patients...")
         # Create 5 synthetic patients
-        for _ in range(5):
-            gender = random.choice(['Male', 'Female'])
-            first_name = fake.first_name_male() if gender == 'Male' else fake.first_name_female()
-            last_name = fake.last_name()
+        for i in range(5):
+            if i == 0:
+                gender = 'Female'
+                first_name = 'Diana'
+                last_name = 'Bush'
+                age = 58
+                contact = "200-542-5940x50048"
+                address = "0175 Austin Shoal Alexanderland, NE 58788"
+            else:
+                gender = random.choice(['Male', 'Female'])
+                first_name = fake.first_name_male() if gender == 'Male' else fake.first_name_female()
+                last_name = fake.last_name()
+                age = random.randint(25, 85)
+                contact = fake.phone_number()
+                address = fake.address()
             
             patient = Patient(
                 name=f"{first_name} {last_name}",
-                age=random.randint(25, 85),
+                age=age,
                 gender=gender,
-                contact_info=fake.phone_number(),
-                address=fake.address(),
+                contact_info=contact,
+                address=address,
                 created_at=fake.date_time_between(start_date='-5y', end_date='now')
             )
             db.session.add(patient)
@@ -102,12 +113,46 @@ def seed_data():
             for i in range(8):
                 date = current_date - timedelta(days=i*90)
                 sentiments = ["Stable", "Improving", "Deteriorating"]
+                sentiment = random.choice(sentiments)
+                
+                def generate_medical_note(sentiment):
+                    subjective_opts = [
+                        "Patient reports compliance with medication.",
+                        "Patient notes mild fatigue but no chest pain.",
+                        "Patient denies shortness of breath or palpitations.",
+                        "Reports feeling well, exercising 3x/week."
+                    ]
+                    objective_opts = [
+                        "Lungs clear to auscultation. Heart RRR.",
+                        "BP controlled. No edema in extremities.",
+                        "Abdomen soft, non-tender. Bowel sounds present.",
+                        "Alert and oriented x3. Gait steady."
+                    ]
+                    plan_opts = [
+                        "Continue current therapy. Follow up in 3 months.",
+                        "Monitor BP at home. Labs ordered.",
+                        "Dietary changes recommended. Refill prescriptions.",
+                        "Refer to specialist for further evaluation."
+                    ]
+                    
+                    if sentiment == "Deteriorating":
+                        s = "Patient reports worsening symptoms."
+                        a = "Condition deteriorating. Needs intervention."
+                    elif sentiment == "Improving":
+                        s = "Patient reports feeling much better."
+                        a = "Condition improving. Responding well to treatment."
+                    else:
+                        s = random.choice(subjective_opts)
+                        a = "Condition stable."
+
+                    return f"Subjective: {s}\nObjective: {random.choice(objective_opts)}\nAssessment: {a}\nPlan: {random.choice(plan_opts)}"
+
                 db.session.add(DoctorNote(
                     patient_id=patient.id,
                     date=date,
                     doctor_name=f"Dr. {fake.last_name()}",
-                    note_content=fake.paragraph(nb_sentences=5),
-                    sentiment=random.choice(sentiments)
+                    note_content=generate_medical_note(sentiment),
+                    sentiment=sentiment
                 ))
 
             db.session.commit()
