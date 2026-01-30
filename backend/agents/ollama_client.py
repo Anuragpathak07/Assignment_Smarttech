@@ -1,36 +1,56 @@
+import os
+from dotenv import load_dotenv
+from groq import Groq
 
-import requests
-import json
+# Load environment variables
+load_dotenv()
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3"
+# Initialize Groq client
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("GROQ_API_KEY not found in environment variables")
+
+client = Groq(api_key=api_key)
+
+MODEL_NAME = "llama-3.3-70b-versatile"
 
 def query_ollama(prompt, system_prompt=None):
     """
-    Sends a prompt to the local Ollama instance running Llama 3.
+    Sends a prompt to Groq API using Llama 3.3
     """
-    full_prompt = prompt
+    messages = []
+    
+    # Add system prompt if provided
     if system_prompt:
-        full_prompt = f"System: {system_prompt}\n\nUser: {prompt}"
-
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": full_prompt,
-        "stream": False,
-        "options": {
-            "temperature": 0.3, # Keep it factual
-            "num_predict": 500  # concise summaries
-        }
-    }
+        messages.append({
+            "role": "system",
+            "content": system_prompt
+        })
+    
+    # Add user prompt
+    messages.append({
+        "role": "user",
+        "content": prompt
+    })
 
     try:
-        response = requests.post(OLLAMA_URL, json=payload, timeout=120)
-        if response.status_code != 200:
-            return f"Error: Ollama API returned {response.status_code}. Details: {response.text}"
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=messages,
+            temperature=0.3,  # Keep it factual
+            max_tokens=500    # Concise summaries
+        )
         
-        data = response.json()
-        return data.get("response", "").strip()
-    except requests.exceptions.ConnectionError:
-        return "Error: Could not connect to Ollama. Is 'ollama serve' running?"
+        return response.choices[0].message.content.strip()
+    
     except Exception as e:
-        return f"Error querying AI: {str(e)}"
+        return f"Error querying Groq: {str(e)}"
+
+
+# Test it
+if __name__ == "__main__":
+    result = query_ollama(
+        prompt="What is Python?",
+        system_prompt="You are a helpful programming assistant. Answer concisely."
+    )
+    print(result)

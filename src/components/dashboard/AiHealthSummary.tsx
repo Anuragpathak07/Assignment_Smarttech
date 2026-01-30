@@ -1,6 +1,7 @@
 import { Brain, AlertTriangle, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import ReactMarkdown from 'react-markdown';
 
 interface AiHealthSummaryProps {
   summary: string;
@@ -8,8 +9,7 @@ interface AiHealthSummaryProps {
 }
 
 export function AiHealthSummary({ summary, conditions }: AiHealthSummaryProps) {
-  const paragraphs = summary.split('\n\n');
-  
+
   return (
     <Card className="shadow-medical-lg">
       <CardHeader className="pb-3">
@@ -32,8 +32,8 @@ export function AiHealthSummary({ summary, conditions }: AiHealthSummaryProps) {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2 pb-2">
           {conditions.map((condition, index) => (
-            <Badge 
-              key={index} 
+            <Badge
+              key={index}
               variant="secondary"
               className="bg-status-warning/10 text-status-warning border-status-warning/20"
             >
@@ -42,16 +42,22 @@ export function AiHealthSummary({ summary, conditions }: AiHealthSummaryProps) {
             </Badge>
           ))}
         </div>
-        
-        <div className="space-y-3 text-sm leading-relaxed">
-          {paragraphs.map((paragraph, index) => (
-            <p 
-              key={index} 
-              className={paragraph.startsWith('RECOMMENDATIONS') ? 'font-medium text-foreground pt-2' : 'text-muted-foreground'}
-            >
-              {paragraph}
-            </p>
-          ))}
+
+        <div className="space-y-3 text-sm leading-relaxed text-muted-foreground ai-summary-content">
+          <ReactMarkdown
+            components={{
+              p: ({ ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+              strong: ({ ...props }) => <span className="font-semibold text-foreground" {...props} />,
+              ul: ({ ...props }) => <ul className="list-disc pl-5 space-y-1 my-2" {...props} />,
+              ol: ({ ...props }) => <ol className="list-decimal pl-5 space-y-1 my-2" {...props} />,
+              li: ({ ...props }) => <li className="" {...props} />,
+              h1: ({ ...props }) => <h3 className="font-semibold text-foreground text-lg mt-4 mb-2 first:mt-0" {...props} />,
+              h2: ({ ...props }) => <h3 className="font-semibold text-foreground text-base mt-4 mb-2" {...props} />,
+              h3: ({ ...props }) => <h3 className="font-medium text-foreground text-sm mt-3 mb-1" {...props} />,
+            }}
+          >
+            {summary}
+          </ReactMarkdown>
         </div>
       </CardContent>
     </Card>

@@ -4,6 +4,10 @@ import { ArrowRight, Upload, Activity, Brain, Shield, TrendingUp, FileText, Scan
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { usePatient } from "@/context/PatientContext";
+import { HealthSummaryCard } from "@/components/HealthSummaryCard";
+import { RiskPrediction } from "@/components/RiskPrediction";
+import { ClinicalTimeline } from "@/components/ClinicalTimeline";
 
 const features = [
   {
@@ -45,6 +49,8 @@ const fadeInUp = {
 };
 
 export default function Landing() {
+  const { patientData } = usePatient();
+
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -60,17 +66,17 @@ export default function Landing() {
                 <Activity className="h-4 w-4" />
                 Healthcare Analytics Platform
               </div>
-              
+
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
                 Unified Intelligence for{' '}
                 <span className="text-primary">Your Health Data</span>
               </h1>
-              
+
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                MediScope AI transforms your medical records, imaging, and genomic data into 
+                MediScope AI transforms your medical records, imaging, and genomic data into
                 actionable health insights with advanced AI analysis.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" asChild>
                   <Link to="/upload">
@@ -87,12 +93,42 @@ export default function Landing() {
               </div>
             </motion.div>
           </div>
-          
+
           {/* Decorative elements */}
           <div className="absolute top-1/2 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
           <div className="absolute top-1/4 right-0 w-96 h-96 bg-chart-secondary/5 rounded-full blur-3xl translate-x-1/2" />
         </div>
       </section>
+
+      {/* Patient Insights Section - Visible only if data exists */}
+      {patientData && (
+        <section className="py-12 bg-gray-50/50">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="mb-8 flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold text-gray-900">Active Patient Insight</h2>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="space-y-6">
+                  <HealthSummaryCard patient={patientData.patient} />
+                </div>
+                <div className="space-y-6">
+                  <RiskPrediction risks={patientData.predictions} />
+                </div>
+                <div className="space-y-6">
+                  <ClinicalTimeline notes={patientData.recent_clinical_notes} />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-20 md:py-28 bg-card">
@@ -160,7 +196,7 @@ export default function Landing() {
                 </Link>
               </Button>
             </div>
-            
+
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />

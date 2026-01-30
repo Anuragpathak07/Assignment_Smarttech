@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { usePatient } from "@/context/PatientContext";
 import { HealthSummaryCard } from "@/components/HealthSummaryCard";
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PatientSearch } from "@/components/PatientSearch";
 import { AIInsights } from "@/components/AIInsights";
+import { ClinicalTimeline } from "@/components/ClinicalTimeline";
 
 const container = {
   hidden: { opacity: 0 },
@@ -29,9 +29,6 @@ const item = {
 
 export default function Dashboard() {
   const { patientData: data, loading, setPatientId, refreshPatient } = usePatient();
-
-  // No internal fetch needed, handled by Context
-
 
   if (loading) {
     return (
@@ -100,6 +97,37 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
+          {/* Stats Row - Full Width */}
+          <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <StatCard
+              label="Blood Pressure"
+              value={data.trends.blood_pressure?.current}
+              trend={data.trends.blood_pressure?.status}
+              icon={<Activity className="h-4 w-4" />}
+            />
+            <StatCard
+              label="A1C Level"
+              value={data.trends.labs['Hemoglobin A1C']?.current?.split(" ")[0] ?? "--"}
+              unit="%"
+              trend={data.trends.labs['Hemoglobin A1C']?.status}
+              icon={<FileText className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Cholesterol"
+              value={data.trends.labs['LDL Cholesterol']?.current?.split(" ")[0] ?? "--"}
+              unit="mg/dL"
+              trend={data.trends.labs['LDL Cholesterol']?.status}
+              icon={<HeartPulseIcon />}
+            />
+            <StatCard
+              label="Overall Risk"
+              value={data.predictions.length > 0 ? "High" : "Low"}
+              trend={data.predictions.length > 0 ? "Attention" : "Stable"}
+              inverse
+            />
+          </motion.div>
+
+          {/* Main Layout Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column: Patient Profile & Risks */}
             <div className="lg:col-span-4 space-y-6">
@@ -116,61 +144,12 @@ export default function Dashboard() {
               </motion.div>
 
               <motion.div variants={item}>
-                <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <CardHeader className="uppercase tracking-wide text-xs font-bold text-muted-foreground bg-gray-50/50 pb-3">
-                    Clinical Timeline
-                  </CardHeader>
-                  <CardContent className="pt-4 space-y-0">
-                    {data.recent_clinical_notes.map((note: any, i: number) => (
-                      <div key={i} className="relative pl-6 pb-6 last:pb-0 border-l border-gray-200 ml-2">
-                        <div className="absolute -left-[5px] top-0 h-2.5 w-2.5 rounded-full bg-blue-400 ring-4 ring-white"></div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs font-semibold text-gray-500">{note.date}</span>
-                          <span className="text-sm font-medium text-gray-900">{note.doctor}</span>
-                          <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-md border border-gray-100 mt-1">"{note.summary}"</p>
-                          <div className="mt-1">
-                            <SentimentBadge sentiment={note.sentiment} />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                <ClinicalTimeline notes={data.recent_clinical_notes} />
               </motion.div>
             </div>
 
             {/* Right Column: Vitals & Trends */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Quick Stats Row */}
-              <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard
-                  label="Blood Pressure"
-                  value={data.trends.blood_pressure?.current}
-                  trend={data.trends.blood_pressure?.status}
-                  icon={<Activity className="h-4 w-4" />}
-                />
-                <StatCard
-                  label="A1C Level"
-                  value={data.trends.labs['Hemoglobin A1C']?.current?.split(" ")[0] ?? "--"}
-                  unit="%"
-                  trend={data.trends.labs['Hemoglobin A1C']?.status}
-                  icon={<FileText className="h-4 w-4" />}
-                />
-                <StatCard
-                  label="Cholesterol"
-                  value={data.trends.labs['LDL Cholesterol']?.current?.split(" ")[0] ?? "--"}
-                  unit="mg/dL"
-                  trend={data.trends.labs['LDL Cholesterol']?.status}
-                  icon={<HeartPulseIcon />}
-                />
-                <StatCard
-                  label="Overall Risk"
-                  value={data.predictions.length > 0 ? "High" : "Low"}
-                  trend={data.predictions.length > 0 ? "Attention" : "Stable"}
-                  inverse
-                />
-              </motion.div>
-
               {/* Main Charts */}
               <motion.div variants={item}>
                 <TrendChart
@@ -241,17 +220,6 @@ const StatCard = ({ label, value, unit, trend, icon, inverse = false }: any) => 
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-const SentimentBadge = ({ sentiment }: { sentiment: string }) => {
-  const color = sentiment === 'Deteriorating' ? 'text-red-600 bg-red-50 border-red-200' :
-    sentiment === 'Improving' ? 'text-green-600 bg-green-50 border-green-200' :
-      'text-blue-600 bg-blue-50 border-blue-200';
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded border ${color} inline-block`}>
-      {sentiment}
-    </span>
   )
 }
 
